@@ -1,15 +1,177 @@
-import random
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torneio da Rocha Chueri</title>
+  <!-- Fonte Temática Medieval do Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Ícones Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Arquivo de Estilos Customizado -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-# Lista de equipes da Rocha Chueri
-equipes = [
-    "Equipe Grifo de Prata",
-    "Equipe Fênix Dourada",
-    "Equipe Dragão Escarlate",
-    "Equipe Quimera de Ferro"
-]
+  <!-- Elementos de Iluminação de Fundo -->
+  <div class="glow-bg glow-left"></div>
+  <div class="glow-bg glow-right"></div>
 
-# Escolhe uma equipe aleatoriamente para liderar o desafio
-equipe_inicial = random.choice(equipes)
+  <div class="container">
+    <!-- Cabeçalho -->
+    <header class="header">
+      <span class="sub-title">Sorteio de Batalha</span>
+      <h1 class="main-title">TORNEIO DA ROCHA CHUERI</h1>
+      <p class="description">Descubra qual lendária guilda terá a honra de abrir os caminhos e marchar primeiro através do portal místico!</p>
+    </header>
 
-print("--- TORNEIO DA ROCHA CHUERI ---")
-print(f"A primeira equipe a atravessar o portal será: {equipe_inicial}!")
+    <!-- Seção do Portal / Sorteio -->
+    <section class="portal-section">
+      <div class="portal-ring" id="portal">
+        <div class="portal-core">
+          <i class="fa-solid fa-dungeon portal-icon" id="portal-icon"></i>
+          <span class="portal-status" id="portal-status">O Portal Aguarda</span>
+          <h2 class="drawn-team" id="drawn-team">?</h2>
+        </div>
+      </div>
+
+      <button class="draw-btn" id="draw-btn" onclick="sortearEquipe()">
+        <i class="fa-solid fa-dice-d20"></i> Sortear Equipe
+      </button>
+    </section>
+
+    <!-- Grade com as 4 Equipes -->
+    <section class="teams-section">
+      <h3 class="section-title">Equipes Participantes</h3>
+      
+      <div class="teams-grid">
+        <!-- Grifo de Prata -->
+        <div class="team-card grifo" id="card-grifo">
+          <div class="team-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+          <h4 class="team-name">Equipe Grifo de Prata</h4>
+          <p class="team-desc">Estrategistas ágeis, moustros dos céus e guardiões do conhecimento ancestral.</p>
+        </div>
+
+        <!-- Fênix Dourada -->
+        <div class="team-card fenix" id="card-fenix">
+          <div class="team-icon"><i class="fa-solid fa-fire"></i></div>
+          <h4 class="team-name">Equipe Fênix Dourada</h4>
+          <p class="team-desc">Resilientes e incansáveis, renascem mais fortes a cada adversidade.</p>
+        </div>
+
+        <!-- Dragão Escarlate -->
+        <div class="team-card dragao" id="card-dragao">
+          <div class="team-icon"><i class="fa-solid fa-dragon"></i></div>
+          <h4 class="team-name">Equipe Dragão Escarlate</h4>
+          <p class="team-desc">Força bruta devastadora e coragem ardente nas chamas da vitória.</p>
+        </div>
+
+        <!-- Quimera de Ferro -->
+        <div class="team-card quimera" id="card-quimera">
+          <div class="team-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <h4 class="team-name">Equipe Quimera de Ferro</h4>
+          <p class="team-desc">Defensores inabaláveis com uma vontade tão dura quanto a liga de ferro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Histórico de Sorteios -->
+    <section class="history-section">
+      <h3 class="section-title">Histórico de Convocação</h3>
+      <ul class="history-list" id="history-list">
+        <li class="history-empty">Nenhum sorteio realizado ainda. Clique no botão acima!</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Script da Lógica em JS (Idêntica ao código em Python) -->
+  <script>
+    const equipes = [
+      "Equipe Grifo de Prata",
+      "Equipe Fênix Dourada",
+      "Equipe Dragão Escarlate",
+      "Equipe Quimera de Ferro"
+    ];
+
+    const teamCardIds = {
+      "Equipe Grifo de Prata": "card-grifo",
+      "Equipe Fênix Dourada": "card-fenix",
+      "Equipe Dragão Escarlate": "card-dragao",
+      "Equipe Quimera de Ferro": "card-quimera"
+    };
+
+    let historico = [];
+
+    function sortearEquipe() {
+      const btn = document.getElementById("draw-btn");
+      const portal = document.getElementById("portal");
+      const status = document.getElementById("portal-status");
+      const drawnText = document.getElementById("drawn-team");
+      const portalIcon = document.getElementById("portal-icon");
+
+      // Desabilita o botão temporariamente
+      btn.disabled = true;
+      status.innerText = "Invocando energias...";
+      drawnText.innerText = "...";
+      portal.classList.add("spinning");
+
+      // Remove destaques de cards anteriores
+      Object.values(teamCardIds).forEach(id => {
+        document.getElementById(id).classList.remove("active");
+      });
+
+      // Efeito de animação rápido
+      let counter = 0;
+      const interval = setInterval(() => {
+        const tempChoice = equipes[Math.floor(Math.random() * equipes.length)];
+        drawnText.innerText = tempChoice;
+        counter++;
+      }, 100);
+
+      // Sorteio final após 1.5s
+      setTimeout(() => {
+        clearInterval(interval);
+        
+        // random.choice em JavaScript
+        const equipeInicial = equipes[Math.floor(Math.random() * equipes.length)];
+
+        // Atualiza a tela com o resultado
+        portal.classList.remove("spinning");
+        status.innerText = "A PRIMEIRA A ATRAVESSAR O PORTAL É:";
+        drawnText.innerText = equipeInicial;
+        portalIcon.className = "fa-solid fa-door-open portal-icon";
+
+        // Destaque no Card
+        const cardId = teamCardIds[equipeInicial];
+        if (cardId) {
+          document.getElementById(cardId).classList.add("active");
+        }
+
+        // Adiciona ao Histórico
+        adicionarAoHistorico(equipeInicial);
+
+        btn.disabled = false;
+      }, 1500);
+    }
+
+    function adicionarAoHistorico(equipe) {
+      const historyList = document.getElementById("history-list");
+      const agora = new Date().toLocaleTimeString('pt-BR');
+
+      if (historico.length === 0) {
+        historyList.innerHTML = "";
+      }
+
+      historico.unshift({ equipe, agora });
+
+      const li = document.createElement("li");
+      li.className = "history-item";
+      li.innerHTML = `<span><strong>${equipe}</strong> foi selecionada!</span> <span class="time">${agora}</span>`;
+      
+      historyList.insertBefore(li, historyList.firstChild);
+    }
+  </script>
+</body>
+</html>
